@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from sandwiches.constants import SANDWICH, SNACK, DRINK
-from sandwiches.models import FoodItem, Task
+from sandwiches.models import Task
 from sandwiches.scheduler import CafeScheduler
 
 
@@ -9,7 +9,7 @@ class TestCafeSchedulder(TestCase):
     def test_can_add_a_sandwich_order_to_the_schedule(self):
         scheduler = CafeScheduler()
 
-        order_items = [FoodItem(SANDWICH)]
+        order_items = [SANDWICH]
         scheduler.add_order(12, order_items)
 
         self.assertEqual(1, len(scheduler.orders))
@@ -19,8 +19,8 @@ class TestCafeSchedulder(TestCase):
     def test_can_add_multiple_orders_to_the_schedule(self):
         scheduler = CafeScheduler()
 
-        scheduler.add_order(122, [FoodItem(SANDWICH)])
-        scheduler.add_order(123, [FoodItem(SANDWICH)])
+        scheduler.add_order(122, [SANDWICH])
+        scheduler.add_order(123, [SANDWICH])
 
         self.assertEqual(2, len(scheduler.orders))
         self.assertEqual(122, scheduler.orders[0].order_id)
@@ -30,9 +30,9 @@ class TestCafeSchedulder(TestCase):
         scheduler = CafeScheduler()
 
         order_items = [
-            FoodItem(SANDWICH),
-            FoodItem(SANDWICH),
-            FoodItem(SANDWICH),
+            SANDWICH,
+            SANDWICH,
+            SANDWICH,
         ]
         scheduler.add_order(453, order_items)
 
@@ -43,8 +43,8 @@ class TestCafeSchedulder(TestCase):
     def test_schedule_returns_list_of_tasks_with_a_description(self):
         scheduler = CafeScheduler()
 
-        scheduler.add_order(34, [FoodItem(SANDWICH)])
-        scheduler.add_order(35, [FoodItem(SANDWICH)])
+        scheduler.add_order(34, [SANDWICH])
+        scheduler.add_order(35, [SANDWICH])
 
         tasks = scheduler.schedule()
 
@@ -58,8 +58,8 @@ class TestCafeSchedulder(TestCase):
     def test_start_time_is_incremented_for_each_item_in_schedule(self):
         scheduler = CafeScheduler()
 
-        scheduler.add_order(34, [FoodItem(SANDWICH)])
-        scheduler.add_order(35, [FoodItem(SANDWICH)])
+        scheduler.add_order(34, [SANDWICH])
+        scheduler.add_order(35, [SANDWICH])
 
         tasks = scheduler.schedule()
 
@@ -73,8 +73,8 @@ class TestCafeSchedulder(TestCase):
     def test_order_number_is_set_for_each_item_in_schedule(self):
         scheduler = CafeScheduler()
 
-        scheduler.add_order(34, [FoodItem(SANDWICH)])
-        scheduler.add_order(35, [FoodItem(SANDWICH)])
+        scheduler.add_order(34, [SANDWICH])
+        scheduler.add_order(35, [SANDWICH])
 
         tasks = scheduler.schedule()
 
@@ -89,9 +89,9 @@ class TestCafeSchedulder(TestCase):
         scheduler = CafeScheduler()
 
         order_items = [
-            FoodItem(SANDWICH),
-            FoodItem(SANDWICH),
-            FoodItem(SANDWICH),
+            SANDWICH,
+            SANDWICH,
+            SANDWICH,
         ]
         scheduler.add_order(87, order_items)
 
@@ -126,10 +126,10 @@ class TestCafeSchedulder(TestCase):
     def test_adding_an_order_updates_the_schedule(self):
         scheduler = CafeScheduler()
 
-        scheduler.add_order(12, [FoodItem(SANDWICH)])
+        scheduler.add_order(12, [SANDWICH])
         tasks_1 = scheduler.schedule()
 
-        scheduler.add_order(13, [FoodItem(SANDWICH)])
+        scheduler.add_order(13, [SANDWICH])
         tasks_2 = scheduler.schedule()
 
         self.assertNotEqual(tasks_1, tasks_2)
@@ -140,9 +140,9 @@ class TestCafeSchedulder(TestCase):
         scheduler = CafeScheduler()
 
         order_items = [
-            FoodItem(SANDWICH),
-            FoodItem(SNACK),
-            FoodItem(DRINK),
+            SANDWICH,
+            SNACK,
+            DRINK,
         ]
         scheduler.add_order(12, order_items)
         tasks = scheduler.schedule()
@@ -159,8 +159,8 @@ class TestCafeSchedulder(TestCase):
     def test_printable_schedule_returns_schedule_as_a_string(self):
         scheduler = CafeScheduler()
 
-        scheduler.add_order(34, [FoodItem(SANDWICH)])
-        scheduler.add_order(35, [FoodItem(SANDWICH)])
+        scheduler.add_order(34, [SANDWICH])
+        scheduler.add_order(35, [SANDWICH])
 
         printable_schedule = scheduler.printable_schedule()
 

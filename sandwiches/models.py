@@ -3,14 +3,9 @@ from typing import List
 
 
 @dataclass
-class FoodItem:
-    item_type: str
-
-
-@dataclass
 class Order:
     order_id: int
-    items: List[FoodItem]
+    items: List[str]
 
 
 @dataclass

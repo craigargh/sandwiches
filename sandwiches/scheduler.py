@@ -1,14 +1,14 @@
 from typing import List
 
 from sandwiches.constants import SANDWICH
-from sandwiches.models import FoodItem, Order, Task
+from sandwiches.models import Order, Task
 
 
 class CafeScheduler:
     def __init__(self):
         self.orders: List[Order] = []
 
-    def add_order(self, order_number: int, items: List[FoodItem]) -> None:
+    def add_order(self, order_number: int, items: List[str]) -> None:
         self.orders.append(
             Order(order_number, items)
         )
@@ -45,7 +45,7 @@ def process_order(order: Order) -> List[Task]:
     tasks = []
 
     for sandwiches_count, food_item in enumerate(order.items):
-        if food_item.item_type != SANDWICH:
+        if food_item != SANDWICH:
             continue
 
         make_task = Task(
