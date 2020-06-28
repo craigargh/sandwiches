@@ -1,6 +1,6 @@
 from typing import List
 
-from sandwiches.constants import SANDWICH
+from sandwiches.constants import SANDWICH, SERVE_TASK, MAKE_SANDWICH_TASK, BREAK_TASK
 from sandwiches.models import Order, Task
 
 
@@ -22,7 +22,7 @@ class CafeScheduler:
         break_task = Task(
             order_id=None,
             description='Take a break',
-            task_type='BREAK'
+            task_type=BREAK_TASK,
         )
         tasks.append(break_task)
 
@@ -51,7 +51,7 @@ def process_order(order: Order) -> List[Task]:
         make_task = Task(
             order_id=order.order_id,
             description=f'Make sandwich {sandwiches_count + 1} for Order {order.order_id}',
-            task_type='MAKE_SANDWICH'
+            task_type=MAKE_SANDWICH_TASK,
         )
         tasks.append(make_task)
 
@@ -67,15 +67,15 @@ def generate_serve_task(order: Order) -> Task:
     return Task(
         order_id=order.order_id,
         description=description,
-        task_type='SERVE'
+        task_type=SERVE_TASK
     )
 
 
 def calculate_timing(tasks: List[Task]) -> List[Task]:
     timing_map = {
-        'SERVE': 60,
-        'MAKE_SANDWICH': 150,
-        'BREAK': 0
+        SERVE_TASK: 60,
+        MAKE_SANDWICH_TASK: 150,
+        BREAK_TASK: 0,
     }
 
     elapsed_time = 0

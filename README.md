@@ -78,7 +78,7 @@ scheduler.add_order(order_number=1, items=[SANDWICH])
 tasks = scheduler.schedule()
 ```
 
-Each task has the following attributes:
+Tasks are sorted in order that they need to be completed and each task has the following attributes:
 
 ```python
 order_id: int
