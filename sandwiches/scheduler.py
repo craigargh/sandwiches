@@ -1,10 +1,7 @@
-from collections import namedtuple
 from typing import List
 
 from sandwiches.constants import SANDWICH
 from sandwiches.models import FoodItem, Order, Task
-
-OrderDetails = namedtuple('OrderDetails', ['tasks', 'elapsed_time', 'sandwiches_count'])
 
 
 class CafeScheduler:
@@ -17,32 +14,26 @@ class CafeScheduler:
         )
 
     def schedule(self) -> List[Task]:
-        sandwiches_count = 0
-        elapsed_time = 0
-
         tasks = []
         for order in self.orders:
-            order_details = process_order(order, elapsed_time, sandwiches_count)
-            tasks.extend(order_details.tasks)
-
-            elapsed_time = order_details.elapsed_time
-            sandwiches_count = order_details.sandwiches_count
+            order_tasks = process_order(order)
+            tasks.extend(order_tasks)
 
         break_task = Task(
             order_id=None,
             description='Take a break',
-            start_time_seconds=elapsed_time,
+            task_type='BREAK'
         )
         tasks.append(break_task)
+
+        tasks = calculate_timing(tasks)
 
         return tasks
 
     def printable_schedule(self) -> str:
         task_strings = []
         for schedule_number, task in enumerate(self.schedule()):
-            minutes = task.start_time_seconds // 60
-            seconds = task.start_time_seconds % 60
-            start_time = f'{minutes:02d}:{seconds:02d}'
+            start_time = convert_secs_to_mins(task.start_time_seconds)
 
             output = f'{schedule_number + 1}.\t{start_time}\t{task.description}'
             task_strings.append(output)
@@ -50,55 +41,53 @@ class CafeScheduler:
         return '\n'.join(task_strings)
 
 
-def process_order(order: Order, elapsed_time: int, sandwiches_count: int) -> OrderDetails:
+def process_order(order: Order) -> List[Task]:
     tasks = []
 
-    for food_item in order.items:
+    for sandwiches_count, food_item in enumerate(order.items):
         if food_item.item_type != SANDWICH:
             continue
 
-        sandwiches_count += 1
         make_task = Task(
             order_id=order.order_id,
-            description=f'Make sandwich {sandwiches_count}',
-            start_time_seconds=elapsed_time,
+            description=f'Make sandwich {sandwiches_count + 1} for Order {order.order_id}',
+            task_type='MAKE_SANDWICH'
         )
         tasks.append(make_task)
-        elapsed_time += 150
 
-    serve_task = make_serve_task(order, sandwiches_count, elapsed_time)
+    serve_task = generate_serve_task(order)
     tasks.append(serve_task)
-    elapsed_time += 60
 
-    return OrderDetails(tasks, elapsed_time, sandwiches_count)
+    return tasks
 
 
-def make_serve_task(order: Order, sandwiches_count, elapsed_time) -> Task:
-    description = serve_task_description(order, sandwiches_count)
+def generate_serve_task(order: Order) -> Task:
+    description = f'Serve Order {order.order_id}'
 
     return Task(
         order_id=order.order_id,
         description=description,
-        start_time_seconds=elapsed_time,
+        task_type='SERVE'
     )
 
 
-def serve_task_description(order: Order, sandwiches_count: int) -> str:
-    sandwiches = [
-        food_item
-        for food_item in order.items
-        if food_item.item_type == SANDWICH
-    ]
+def calculate_timing(tasks: List[Task]) -> List[Task]:
+    timing_map = {
+        'SERVE': 60,
+        'MAKE_SANDWICH': 150,
+        'BREAK': 0
+    }
 
-    if len(sandwiches) == 1:
-        serve_description = f'Serve sandwich {sandwiches_count}'
-    else:
-        sandwich_numbers = [
-            str(sandwich_id + 1)
-            for sandwich_id in range(sandwiches_count - len(sandwiches), sandwiches_count)
-        ]
-        sandwiches_string = " and ".join([", ".join(sandwich_numbers[:-1]), sandwich_numbers[-1]])
+    elapsed_time = 0
 
-        serve_description = f'Serve sandwiches {sandwiches_string}'
+    for task in tasks:
+        task.start_time_seconds = elapsed_time
+        elapsed_time += timing_map[task.task_type]
 
-    return serve_description
+    return tasks
+
+
+def convert_secs_to_mins(seconds: int) -> str:
+    minutes = seconds // 60
+    seconds = seconds % 60
+    return f'{minutes:02d}:{seconds:02d}'

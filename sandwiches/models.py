@@ -17,4 +17,5 @@ class Order:
 class Task:
     order_id: int
     description: str
-    start_time_seconds: int
+    task_type: str
+    start_time_seconds: int = None

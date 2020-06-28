@@ -49,10 +49,10 @@ class TestCafeSchedulder(TestCase):
         tasks = scheduler.schedule()
 
         self.assertEqual(5, len(tasks))
-        self.assertEqual("Make sandwich 1", tasks[0].description)
-        self.assertEqual("Serve sandwich 1", tasks[1].description)
-        self.assertEqual("Make sandwich 2", tasks[2].description)
-        self.assertEqual("Serve sandwich 2", tasks[3].description)
+        self.assertEqual("Make sandwich 1 for Order 34", tasks[0].description)
+        self.assertEqual("Serve Order 34", tasks[1].description)
+        self.assertEqual("Make sandwich 1 for Order 35", tasks[2].description)
+        self.assertEqual("Serve Order 35", tasks[3].description)
         self.assertEqual("Take a break", tasks[4].description)
 
     def test_start_time_is_incremented_for_each_item_in_schedule(self):
@@ -98,11 +98,26 @@ class TestCafeSchedulder(TestCase):
         tasks = scheduler.schedule()
 
         expected_tasks = [
-            Task(order_id=87, description='Make sandwich 1', start_time_seconds=0),
-            Task(order_id=87, description='Make sandwich 2', start_time_seconds=150),
-            Task(order_id=87, description='Make sandwich 3', start_time_seconds=300),
-            Task(order_id=87, description='Serve sandwiches 1, 2 and 3', start_time_seconds=450),
-            Task(order_id=None, description='Take a break', start_time_seconds=510),
+            Task(
+                order_id=87,
+                description='Make sandwich 1 for Order 87',
+                start_time_seconds=0,
+                task_type='MAKE_SANDWICH'
+            ),
+            Task(
+                order_id=87,
+                description='Make sandwich 2 for Order 87',
+                start_time_seconds=150,
+                task_type='MAKE_SANDWICH'
+            ),
+            Task(
+                order_id=87,
+                description='Make sandwich 3 for Order 87',
+                start_time_seconds=300,
+                task_type='MAKE_SANDWICH'
+            ),
+            Task(order_id=87, description='Serve Order 87', start_time_seconds=450, task_type='SERVE'),
+            Task(order_id=None, description='Take a break', start_time_seconds=510, task_type='BREAK'),
         ]
 
         self.assertEqual(5, len(tasks))
@@ -133,9 +148,9 @@ class TestCafeSchedulder(TestCase):
         tasks = scheduler.schedule()
 
         expected_tasks = [
-            Task(order_id=12, description='Make sandwich 1', start_time_seconds=0),
-            Task(order_id=12, description='Serve sandwich 1', start_time_seconds=150),
-            Task(order_id=None, description='Take a break', start_time_seconds=210),
+            Task(order_id=12, description='Make sandwich 1 for Order 12', start_time_seconds=0, task_type='MAKE_SANDWICH'),
+            Task(order_id=12, description='Serve Order 12', start_time_seconds=150, task_type='SERVE'),
+            Task(order_id=None, description='Take a break', start_time_seconds=210, task_type='BREAK'),
         ]
 
         self.assertEqual(3, len(tasks))
@@ -150,10 +165,10 @@ class TestCafeSchedulder(TestCase):
         printable_schedule = scheduler.printable_schedule()
 
         expected_output = (
-            "1.\t00:00\tMake sandwich 1\n"
-            "2.\t02:30\tServe sandwich 1\n"
-            "3.\t03:30\tMake sandwich 2\n"
-            "4.\t06:00\tServe sandwich 2\n"
+            "1.\t00:00\tMake sandwich 1 for Order 34\n"
+            "2.\t02:30\tServe Order 34\n"
+            "3.\t03:30\tMake sandwich 1 for Order 35\n"
+            "4.\t06:00\tServe Order 35\n"
             "5.\t07:00\tTake a break"
         )
         self.assertEqual(expected_output, printable_schedule)
